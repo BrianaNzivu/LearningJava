@@ -5,23 +5,25 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.io.IOException;
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
         try {
             URL bookUrl = ApiUtil.buildUrl("cooking");
             new BooksQueryTask().execute(bookUrl);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.d("Error", e.getMessage());
         }
     }
@@ -43,7 +45,22 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             TextView tvResult = (TextView) findViewById(R.id.tvResponse);
-            tvResult.setText(result);
+            TextView ErrorResult = (TextView) findViewById(R.id.tvError);
+            progressBar.setVisibility(View.INVISIBLE);
+            if (result == null) {
+                tvResult.setVisibility(View.INVISIBLE);
+                ErrorResult.setVisibility(View.VISIBLE);
+            }
+           else {
+                tvResult.setVisibility(View.VISIBLE);
+                ErrorResult.setVisibility(View.INVISIBLE);
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.setVisibility(View.VISIBLE);
         }
     }
 }
