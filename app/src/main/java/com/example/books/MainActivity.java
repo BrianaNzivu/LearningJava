@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private ProgressBar progressBar;
@@ -44,23 +45,19 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
+            progressBar.setVisibility((View.INVISIBLE));
             TextView tvResult = (TextView) findViewById(R.id.tvResponse);
-            TextView ErrorResult = (TextView) findViewById(R.id.tvError);
-            progressBar.setVisibility(View.INVISIBLE);
+
             if (result == null) {
                 tvResult.setVisibility(View.INVISIBLE);
-                ErrorResult.setVisibility(View.VISIBLE);
             }
-           else {
-                tvResult.setVisibility(View.VISIBLE);
-                ErrorResult.setVisibility(View.INVISIBLE);
+            ArrayList<Book> books = ApiUtil.getBooksFromJson(result);
+            String resultString = "";
+            for (Book book : books) {
+                resultString = resultString = book.title+ "\n"+
+                        book.publishedDate+"\n\n";
             }
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressBar.setVisibility(View.VISIBLE);
+          tvResult.setText(result);
         }
     }
 }
